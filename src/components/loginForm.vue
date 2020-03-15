@@ -3,7 +3,7 @@
     <h1>authentification</h1>
     <form>
       <div>
-        <input v-model="username" type="text" placeholder="Enter email" name="uname" required />
+        <input v-model="email" type="text" placeholder="Enter email" name="uname" required />
         <br />
 
         <input v-model="password" type="password" placeholder="Enter password" name="psw" required />
@@ -11,7 +11,7 @@
 
         <button
           class="v-btn v-btn--depressed theme--light v-size--default primary"
-          @click="login"
+          @click="loginMethod"
         >Login</button>
       </div>
     </form>
@@ -19,34 +19,33 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
   name: 'loginForm',
 
   data: () => ({
-    username: 'admin@example.com',
-    password: 'XFHHOS33z0'
+    email: 'admin@example.com',
+    // password: 'XFHHOS33z0'
+    password: 'mNz1MJyWCc'
   }),
 
   methods: {
-    displayCreds () {
-      console.log('hello')
-    },
-    async login () {
-      const { username, password } = this
-      try {
-        const result = await this.axios.post('http://localhost:3000/api/v1/login', {
-          username,
-          password
-        })
-        console.log('success')
-        this.$root.user = result.data
-        this.$root.loggedIn = true
+    ...mapActions('user', ['login']),
+
+    async loginMethod () {
+      const { email, password } = this
+      await this.login({ email, password })
+      if (this.isAuthenticated) {
         this.$router.push({ name: 'home' })
-      } catch (err) {
-        this.errorLogin = err
-        console.log('failure')
+        console.log('Success')
+      } else {
+        console.log('Fail')
       }
     }
+  },
+  computed: {
+    ...mapGetters('user', ['isAuthenticated'])
   }
 }
 </script>
